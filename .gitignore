@@ -32,5 +32,5 @@ proguard/
 captures/
 
 
-
+./deployer/node_modules/
 .idea/
