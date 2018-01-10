@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 var fs = require('fs-extra');
 var shell = require('shelljs');
 var path = require('path');
@@ -46,14 +48,14 @@ deploymentConfig.deploymentJob.forEach(function (deploymentJob, index) {
         /**installing react@15.3.0 so that index.js for obfuscation could be directly replaced */
         //TODO: install the right app version
         // executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native')
-            // + ' && ' + 'npm install --save react@15.3.0');
+        // + ' && ' + 'npm install --save react@15.3.0');
         /**running npm install */
         executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native')
             + ' && ' + 'npm install', true);
         /**replacing index.js in mode_modules/react-native/packager/react-packager/src/Bundle/index.js
          * with custom implementation of module id generation
          */
-        // fs.copySync('index.js', path.join('repositories', index.toString(), 'fk-react-native', 'node_modules',
+        // fs.copySync(path.join(__dirname, 'index.js'), path.join('repositories', index.toString(), 'fk-react-native', 'node_modules',
             // 'react-native', 'packager', 'react-packager', 'src', 'Bundle', 'index.js'), { overwrite: true });
         /**
          * running precompile script for each deployment job
