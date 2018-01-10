@@ -1,0 +1,28 @@
+{
+    "name": "dus-deployer-example",
+    "version": "1.0.0",
+    "description": "A short demo to demonstrate the working of deployer of DUS",
+    "main": "server.js",
+    "scripts": {
+      "test": "echo \"Error: no test specified\" && exit 1",
+      "start": "node server.js"
+    },
+    "repository": {
+      "type": "git",
+      "url": "https://www.github.com/Flipkart/DUS"
+    },
+    "keywords": [
+      "DUS",
+      "Deployer",
+      "dus-deployer",
+      "codepush"
+    ],
+    "author": "surya.kanoria",
+    "license": "ISC",
+    "dependencies": {
+      "body-parser": "1.18.2",
+      "express": "4.16.2",
+      "node-fetch": "^1.7.3"
+    }
+  }
+  

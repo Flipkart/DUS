@@ -1,0 +1,14 @@
+{
+    "deploymentJob": [
+      {
+        "repoUrl": "git@github.com:surya-kanoria/DUS-Sample-App.git",
+        "appVersions": [
+          "default"
+        ],
+        "branchName": "master",
+        "shouldDeploy": true,
+        "preCompileScript": "ls",
+        "bundleName": "example"
+      }
+    ]
+  }

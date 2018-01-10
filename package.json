@@ -1,0 +1,32 @@
+{
+  "name": "dus-deployer",
+  "version": "1.0.10",
+  "description": "Deployment system for DUS",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flipkart/DUS.git"
+  },
+  "keywords": [
+    "DUS",
+    "React-Native",
+    "OTA"
+  ],
+  "bin": "./BundleGenerator.js",
+  "author": "surya.kanoria",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Flipkart/DUS/issues"
+  },
+  "homepage": "https://github.com/Flipkart/DUS#readme",
+  "dependencies": {
+    "fs-extra": "^5.0.0",
+    "md5": "^2.2.1",
+    "react-native": "^0.47.2",
+    "shelljs": "^0.7.8",
+    "yargs": "^10.0.3"
+  }
+}
