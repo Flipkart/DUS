@@ -131,4 +131,4 @@ public class MainApplication extends Application implements ReactApplication, Du
 	* _PackagedDbName_ - A sqlite database that contains all the components that you is packaged in the APK.
 	* _PackagedVersion_ - The version of the database that is shipped in the APK. This version number needs to be bumped up if this database changes with a new APK update.
 
-The specifications of these dependencies can be found here: \*link\*
+The specifications of these dependencies can be found [here](https://github.com/Flipkart/DUS/blob/master/docs/AndroidSpecs.md)

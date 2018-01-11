@@ -2,11 +2,11 @@
 
 All the specifications for implementation of modules for custom implementation of DUS.
 
-* **[ComponentDownloader](###ComponentDownloader)**
-* **[FileConfigDownloader](###FileConfigDownloader)**
-* **[DusLogger](###DusLogger)**
-* **[PackagedDbName](###PackagedDbName)**
-* **[PackagedDbVersion](###PackagedDbVersion)**
+* **[ComponentDownloader](#componentdownloader)**
+* **[FileConfigDownloader](#fileConfigdownloader)**
+* **[DusLogger](#duslogger)**
+* **[PackagedDbName](#packageddbname)**
+* **[PackagedDbVersion](#packageddbversion)**
 
 ### ComponentDownloader
 
