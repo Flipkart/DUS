@@ -111,42 +111,54 @@ public class DUSContentProvider extends ContentProvider {
         switch (sUriMatcher.match(uri)) {
             case DUSContracts.JS_BUNDLE:
                 String screenType = uri.getLastPathSegment();
-                ScreenInfo screenInfo = mCachedScreenInfo.get(screenType);
-                boolean shouldRetry = DUSContracts.TRUE.equalsIgnoreCase(uri.getQueryParameter(DUSContracts.QUERY_SHOULD_RETRY));
-                boolean shouldRefresh = false;
-                if (screenInfo != null) {
-                    if (DUSContracts.LOADED == screenInfo.status) {
-                        cursor = generateResponse(screenInfo.status, screenInfo.filePath);
-                    } else if (DUSContracts.LOADING == screenInfo.status) {
-                        cursor = generateResponse(screenInfo.status, "");
-                    } else if (DUSContracts.ERROR == screenInfo.status) {
-                        if (shouldRetry) {
-                            cursor = generateResponse(DUSContracts.LOADING, "");
-                            shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
-                        } else {
-                            cursor = generateResponse(DUSContracts.ERROR, "");
-                        }
-                    }
-                } else {
-                    String filePath = getFileHelper().getFilePath(getScreenMaker().getFileKey(screenType));
-                    if (TextUtils.isEmpty(filePath)) {
-                        shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
-                        cursor = generateResponse(DUSContracts.LOADING, "");
-                    } else {
-                        screenInfo = new ScreenInfo();
-                        screenInfo.status = DUSContracts.LOADED;
-                        screenInfo.filePath = filePath;
-                        mCachedScreenInfo.put(screenType, screenInfo);
-                        cursor = generateResponse(DUSContracts.LOADED, filePath);
-                    }
-                }
-                if (shouldRefresh) {
-                    if (screenInfo == null) {
-                        screenInfo = new ScreenInfo();
-                    }
+                if (getScreenMaker().getUpdateGraphStatus() == DUSConstants.DOWNLOADING) {
+                    ScreenInfo screenInfo = new ScreenInfo();
                     screenInfo.status = DUSContracts.LOADING;
                     mCachedScreenInfo.put(screenType, screenInfo);
-                    query(DUSContracts.buildFetchUpdateGraphUriWithRetry(), null, null, null, null);
+                    cursor = generateResponse(DUSContracts.LOADING, "");
+                } else {
+                    ScreenInfo screenInfo = mCachedScreenInfo.get(screenType);
+                    boolean shouldRetry = DUSContracts.TRUE.equalsIgnoreCase(uri.getQueryParameter(DUSContracts.QUERY_SHOULD_RETRY));
+                    boolean shouldRefresh = false;
+                    if (screenInfo != null) {
+                        if (DUSContracts.LOADED == screenInfo.status) {
+                            cursor = generateResponse(screenInfo.status, screenInfo.filePath);
+                        } else if (DUSContracts.LOADING == screenInfo.status) {
+                            cursor = generateResponse(screenInfo.status, "");
+                        } else if (DUSContracts.ERROR == screenInfo.status) {
+                            if (shouldRetry) {
+                                cursor = generateResponse(DUSContracts.LOADING, "");
+                                shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
+                            } else {
+                                cursor = generateResponse(DUSContracts.ERROR, "");
+                            }
+                        }
+                    } else {
+                        String filePath = getFileHelper().getFilePath(getScreenMaker().getFileKey(screenType));
+                        if (TextUtils.isEmpty(filePath)) {
+                            shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
+                            screenInfo = new ScreenInfo();
+                            screenInfo.status = DUSContracts.LOADING;
+                            mCachedScreenInfo.put(screenType, screenInfo);
+                            cursor = generateResponse(DUSContracts.LOADING, "");
+                        } else {
+                            screenInfo = new ScreenInfo();
+                            screenInfo.status = DUSContracts.LOADED;
+                            screenInfo.filePath = filePath;
+                            mCachedScreenInfo.put(screenType, screenInfo);
+                            cursor = generateResponse(DUSContracts.LOADED, filePath);
+                        }
+                    }
+                    if (shouldRefresh) {
+                        if (screenInfo == null) {
+                            screenInfo = new ScreenInfo();
+                        }
+                        screenInfo.status = DUSContracts.LOADING;
+                        mCachedScreenInfo.put(screenType, screenInfo);
+                        if (getScreenMaker().getUpdateGraphStatus() != DUSConstants.DOWNLOADING) {
+                            query(DUSContracts.buildFetchUpdateGraphUriWithRetry(), null, null, null, null);
+                        }
+                    }
                 }
                 break;
             case DUSContracts.JS_COMPONENTS:

@@ -8,12 +8,12 @@ import android.text.TextUtils;
 import com.flipkart.dus.DUSConstants;
 import com.flipkart.dus.DUSContracts;
 import com.flipkart.dus.DusDependencyResolver;
-import com.flipkart.dus.dependencies.ErrorResponse;
-import com.flipkart.dus.utilities.HashUtilities;
 import com.flipkart.dus.dependencies.DusLogger;
+import com.flipkart.dus.dependencies.ErrorResponse;
 import com.flipkart.dus.dependencies.FileConfigRequestInterface;
 import com.flipkart.dus.dependencies.FileConfigResponseInterface;
 import com.flipkart.dus.models.FileConfig;
+import com.flipkart.dus.utilities.HashUtilities;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -74,6 +74,10 @@ public class UpdateGraphManager {
                 throw new IllegalStateException("Illegal state of update graph: " + updateGraphStatus.get());
         }
         return response;
+    }
+
+    public int getUpdateGraphStatus() {
+        return updateGraphStatus.get();
     }
 
     private void downloadNewUpdateGraph(@NonNull final Context context) {

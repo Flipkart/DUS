@@ -200,6 +200,10 @@ public class ScreenMaker {
         }
     }
 
+    public int getUpdateGraphStatus() {
+        return mUpdateGraphManager.getUpdateGraphStatus();
+    }
+
     @NonNull
     public String getFileKey(@NonNull String screenType) {
         return mUpdateGraphManager.generateFileKey(screenType);

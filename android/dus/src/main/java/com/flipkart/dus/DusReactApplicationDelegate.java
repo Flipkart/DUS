@@ -12,6 +12,8 @@ import android.text.TextUtils;
 import com.facebook.react.ReactActivityDelegate;
 import com.facebook.react.bridge.UiThreadUtil;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 import javax.annotation.Nullable;
 
 /**
@@ -30,7 +32,52 @@ public class DusReactApplicationDelegate extends ReactActivityDelegate {
 
     @Override
     protected void loadApp(final String appKey) {
-        AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
+        final AtomicBoolean loaded = new AtomicBoolean(false);
+        appContext.getContentResolver().registerContentObserver(DUSContracts.buildFetchPageUri(mBundleName), true, new ContentObserver(null) {
+            @Override
+            public void onChange(boolean selfChange, final Uri uri) {
+                appContext.getContentResolver().unregisterContentObserver(this);
+                AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (DUSContracts.TRUE.equalsIgnoreCase(uri.getQueryParameter(DUSContracts.QUERY_ERROR))) {
+                            DusReactApplicationDelegate.super.loadApp(appKey);
+                        } else {
+                            Cursor requeryCursor = appContext.getContentResolver().query(DUSContracts.buildFetchPageUri(mBundleName), null, null, null, null);
+                            if (requeryCursor != null) {
+                                requeryCursor.moveToFirst();
+                                final String response = requeryCursor.getString(requeryCursor.getColumnIndex(DUSContracts.COLUMN_RESPONSE));
+                                if (TextUtils.isEmpty(response)) {
+                                    System.out.println("Bundle fetch failed");
+                                } else {
+                                    if (!loaded.get()) {
+                                        loaded.set(true);
+                                        ((DusApplication) appContext.getApplicationContext()).getDusReactNativeHost().setJSBundleFile(response);
+                                        UiThreadUtil.runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                DusReactApplicationDelegate.super.loadApp(appKey);
+                                                onResume();
+                                            }
+                                        });
+                                    }
+                                }
+                                requeryCursor.close();
+                            } else {
+                                UiThreadUtil.runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        DusReactApplicationDelegate.super.loadApp(appKey);
+                                        onResume();
+                                    }
+                                });
+                            }
+                        }
+                    }
+                });
+            }
+        });
+        AsyncTask.SERIAL_EXECUTOR.execute(new Runnable() {
             @Override
             public void run() {
                 Uri uri = DUSContracts.buildFetchPageUri(mBundleName);
@@ -38,50 +85,19 @@ public class DusReactApplicationDelegate extends ReactActivityDelegate {
                 if (cursor != null) {
                     cursor.moveToFirst();
                     final int status = Integer.parseInt(cursor.getString(cursor.getColumnIndex(DUSContracts.COLUMN_STATUS)));
-                    if (DUSContracts.LOADING == status) {
-                        appContext.getContentResolver().registerContentObserver(DUSContracts.buildFetchPageUri(mBundleName), true, new ContentObserver(null) {
-                            @Override
-                            public void onChange(boolean selfChange, final Uri uri) {
-                                appContext.getContentResolver().unregisterContentObserver(this);
-                                AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (DUSContracts.TRUE.equalsIgnoreCase(uri.getQueryParameter(DUSContracts.QUERY_ERROR))) {
-                                            DusReactApplicationDelegate.super.loadApp(appKey);
-                                        } else {
-                                            Cursor requeryCursor = appContext.getContentResolver().query(DUSContracts.buildFetchPageUri(mBundleName), null, null, null, null);
-                                            if (requeryCursor != null) {
-                                                requeryCursor.moveToFirst();
-                                                final String response = requeryCursor.getString(requeryCursor.getColumnIndex(DUSContracts.COLUMN_RESPONSE));
-                                                if (TextUtils.isEmpty(response)) {
-                                                    System.out.println("Bundle fetch failed");
-                                                } else {
-                                                    ((DusApplication) appContext.getApplicationContext()).getDusReactNativeHost().setJSBundleFile(response);
-                                                    DusReactApplicationDelegate.super.loadApp(appKey);
-                                                }
-                                                requeryCursor.close();
-                                            } else {
-                                                UiThreadUtil.runOnUiThread(new Runnable() {
-                                                    @Override
-                                                    public void run() {
-                                                        DusReactApplicationDelegate.super.loadApp(appKey);
-                                                    }
-                                                });
-                                            }
-                                        }
-                                    }
-                                });
-                            }
-                        });
-                    } else if (DUSContracts.LOADED == status) {
+                    if (DUSContracts.LOADED == status) {
                         final String response = cursor.getString(cursor.getColumnIndex(DUSContracts.COLUMN_RESPONSE));
-                        ((DusApplication) appContext.getApplicationContext()).getDusReactNativeHost().setJSBundleFile(response);
-                        UiThreadUtil.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                DusReactApplicationDelegate.super.loadApp(appKey);
-                            }
-                        });
+                        if (!loaded.get()) {
+                            loaded.set(true);
+                            ((DusApplication) appContext.getApplicationContext()).getDusReactNativeHost().setJSBundleFile(response);
+                            UiThreadUtil.runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    DusReactApplicationDelegate.super.loadApp(appKey);
+                                    onResume();
+                                }
+                            });
+                        }
                     } else if (DUSContracts.ERROR == status) {
                         System.out.println("Bundle Fetch failed");
                     }

@@ -35,7 +35,8 @@ function generateUpdatePatch(configFilePath, existingPatchPath, updateGraphVersi
 function generateUpdateGraph(updateGraphConfig, existingPatchPath, appVersion, updateGraphVersion) {
     var updateGraph = getExistingUpdateGraphForAppVersion(appVersion, existingPatchPath);
     console.log('existing update graph', JSON.stringify(updateGraph));
-    var newUpdateGraph = sanitizeUpdateGraph(updateGraph, Object.keys(updateGraphConfig.currentUpdateGraph));
+    var newUpdateGraph = {};
+    newUpdateGraph.currentUpdateGraph = sanitizeUpdateGraph(updateGraph.currentUpdateGraph, Object.keys(updateGraphConfig.currentUpdateGraph));
     console.log('santized update graph', JSON.stringify(newUpdateGraph));
     newUpdateGraph = generateUpdateGraphForAppVersion(updateGraphConfig, newUpdateGraph);
     console.log('generated update graph', JSON.stringify(newUpdateGraph));
@@ -99,7 +100,7 @@ function generateUpdateGraphForAppVersion(updateGraphConfig, productionUpdateGra
         var screenConfig = updateGraphConfig.currentUpdateGraph[bundleName];
         if (screenConfig.shouldDeploy) {
             var components = componentGenerator(screenConfig.bundlePath);
-            productionUpdateGraph[bundleName] = components.componentList;
+            productionUpdateGraph.currentUpdateGraph[bundleName] = components.componentList;
             hashMap = Object.assign({}, hashMap, components.hashMap);
         }
     });
