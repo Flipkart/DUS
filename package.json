@@ -1,6 +1,6 @@
 {
   "name": "dus-deployer",
-  "version": "1.47.7",
+  "version": "1.47.8",
   "description": "Deployment system for DUS",
   "main": "index.js",
   "scripts": {

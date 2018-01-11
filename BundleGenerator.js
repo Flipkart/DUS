@@ -29,10 +29,11 @@ if (fs.pathExistsSync('ReactBundles')) {
 
 
 var argv = require('yargs')
-    .string('config')
-    .string('platform')
-    .string('updateGraphVersion')
+    .string('config').describe('config','DeploymentConfig for the deployer')
+    .choices('platform',['android','ios']).describe('platform', 'platform to generate bundles for')
+    .string('updateGraphVersion').describe('updateGraphVersion','Enter a update graph version higher than the previous deployment')
     .string('outputPath')
+    .string('prodUpdateGraph').describe('prodUpdateGraph','filepath of update patch already in production')
     .boolean('react16')
     .argv;
 var deploymentConfigFile = fs.readFileSync(argv.config, { encoding: 'utf-8' });
@@ -100,7 +101,7 @@ deploymentConfig.deploymentJob.forEach(function (deploymentJob, index) {
 });
 var releaseConfig = deploymentConfigGenerator(deploymentConfig, argv.outputPath);
 fs.writeJSONSync('ReleaseConfig.json', releaseConfig);
-var update = updateGraphGenerator('ReleaseConfig.json', '', argv.updateGraphVersion);
+var update = updateGraphGenerator('ReleaseConfig.json', argv.prodUpdateGraph, argv.updateGraphVersion);
 
 /**
  * Writing output to filepath specified in output path
