@@ -2,13 +2,26 @@
 __DUS__ is a Over The Air (__OTA__) update system that allows React Native developers to deploy mobile app updates directly to the devices of the users. This system has the following features:
 
 * __Differential downloading__ - Incase a React Native bundle is already present on the device, it downloads just the components that has changed
-* __Multiple bundles__ - It allows more than one bundles to be deployed on just one application which improves the load time by reducing the parse time of the bundle and allow different teams to maintain their own React Native bundles
+* __Multiple bundles__ - It allows more than one bundles to be deployed on just one application which improves the load time by reducing the parse time of the bundle and allow different teams to maintain their own React Native bundles.
+*  __Code Sharing__ - While DUS allows multiple bundles, for an application, it ensures that the common code between any set of bundles are downloaded just once and avoids redundant download of common code.
 * __Instant Updates__ - Once an update is released, it guarantees that only the latest bundle is run on the device and not an older bundle from the cache.
 * __Flexibility__ - It allows complete flexibility in the way update patches are kept on your server and the network calls that the app makes to fetch the update patch.
+
+## How it works (WIP)
+
+Dus Deployer pulls the repositories specified in a configuration file called ``DeploymentConfig.json`` creates a bundle for each repository, splits it into chunks and generates update patches which contains a config called **Update Graph** for each version of the Android/iOS application. These patches are then uploaded to the server and the chunks are uploaded to a key-value storage pair/CDN. 
+
+The update graph for a app version specifies the chunks to be combined to generate a specific bundle. During the launch of the application, a new update graph is downloaded. When a new bundle is to be generated it fetches the chunks required for the bundle from the cache, downloading the missing chunks and combines them to form a new bundle.
+
+This [ReactFoo video](https://www.youtube.com/watch?v=3G6tMg29Wnw) explains the working of DUS. A detailed guide on the workings of DUS can be found here(*link*)
 
 ## Setup
 
 * Install dus-deployer on your machine: ```npm install -g dus-deployer```
+
+*NOTE: This guide assumes you have used the react-native init command to initialize your React Native project. As of March 2017, the command create-react-native-app can also be used to initialize a React Native project. If using this command, please run npm run eject in your project's home directory to get a project very similar to what react-native init would have created.* 
+
+*Even if you have a different project structure, dus could be easily integrated by setting the appropriate filepath for dus in your ``android/settings.gradle``*
 
 ### Integration (For Android)
 * Add dus-deployer to your app: ```npm install --save dus-deployer```
@@ -132,3 +145,69 @@ public class MainApplication extends Application implements ReactApplication, Du
 	* _PackagedVersion_ - The version of the database that is shipped in the APK. This version number needs to be bumped up if this database changes with a new APK update.
 
 The specifications of these dependencies can be found [here](https://github.com/Flipkart/DUS/blob/master/docs/AndroidSpecs.md)
+
+## Deployment
+
+* Create a file ``DeploymentConfig.json``. This file contains a list of jobs for a particular application. Each job specifies the react native repository url, the branch name, the app versions, a script to be executed immediately before generating a bundle and the name of the bundle.
+
+**Sample File**
+
+```javascript
+{
+  "deploymentJob": [
+    {
+      "repoUrl": "git@github.com:surya-kanoria/DUS-Sample-App.git",
+      "appVersions": [
+        "default"
+      ],
+      "branchName": "master",
+      "shouldDeploy": true,
+      "preCompileScript": "ls",
+      "bundleName": "example"
+    }
+  ]
+}
+  ```
+* Run the following command to generate the update patch for your application:
+  ``dus-deployer --config DeploymentConfig.json --platform android --react16 true --updateGraphVersion <updateGraphVersion> --outputPath output --prodUpdateGraph <Update Patch generated during last deployment>
+``  
+
+	A Sample command would look like this:
+ ``dus-deployer --config DeploymentConfig.json --platform android --react16 true --updateGraphVersion 0.0.0.0 --outputPath output --prodUpdateGraph output/UpdatePatch.json``
+
+
+
+* In the output folder, an UpdatePatch.json would be generated which is a map of app version vs the update graphs that are generated which needs to be uploaded to your server.
+* In the same output folder, ComponentMap.json would be generated. It is a map of component keys vs the components that needs to be uploaded to your server.
+
+For advanced usage please refer this doc(\*link\*).
+
+## Sample Project
+
+[https://github.com/surya-kanoria/DUS-Sample-App](https://github.com/surya-kanoria/DUS-Sample-App)
+
+## Contributing
+
+### How?
+
+The easiest way to contribute is by [forking the repo](https://help.github.com/articles/fork-a-repo/), making your changes and [creating a pull request](https://help.github.com/articles/creating-a-pull-request/).
+
+### What?
+
+* iOS support [WIP]
+* Adding support for other versions of React Native. [WIP]
+* Docs for integration with CI [WIP]
+* Adding Wiki.
+* Completing TODOs
+* Writing unit tests.
+* Finding bugs and issues. (submit [here](https://github.com/Flipkart/DUS/issues))
+* Fixing bugs and issues.
+
+## License
+
+[Apache v2.0](https://tldrlegal.com/license/apache-license-2.0-(apache-2.0))
+
+## Contact us
+
+Please open issues for any bugs that you encounter. You can reach out to me on twitter [@suryakanoria](https://www.twitter.com/suryakanoria) or, write to cross-platform@flipkart.com for any questions that
+you might have.
