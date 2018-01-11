@@ -1,9 +1,9 @@
 # DUS - Dynamic Update Service
 __DUS__ is a Over The Air (__OTA__) update system that allows React Native developers to deploy mobile app updates directly to the devices of the users. This system has the following features:
 
-* __Differential downloading__ - Incase a React Native bundle is already present on the device, it downloads just the components that has changed
+* __Differential downloading__ - Incase a React Native bundle is already present on the device, it downloads just the components that has changed and not the entire new bundle.
 * __Multiple bundles__ - It allows more than one bundles to be deployed on just one application which improves the load time by reducing the parse time of the bundle and allow different teams to maintain their own React Native bundles.
-*  __Code Sharing__ - While DUS allows multiple bundles, for an application, it ensures that the common code between any set of bundles are downloaded just once and avoids redundant download of common code.
+*  __Code Sharing__ - While DUS encourages multiple bundles, for an application, it ensures that the common code between any set of bundles are downloaded just once and avoids redundant download of common code.
 * __Instant Updates__ - Once an update is released, it guarantees that only the latest bundle is run on the device and not an older bundle from the cache.
 * __Flexibility__ - It allows complete flexibility in the way update patches are kept on your server and the network calls that the app makes to fetch the update patch.
 
