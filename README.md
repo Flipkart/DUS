@@ -65,7 +65,7 @@ We are doing our best to support each React Native version and respond to new Re
 |0.46.x|WIP|
 |0.47.x|1.47.11|[0.47-stable](https://github.com/Flipkart/DUS/tree/0.47-stable)|
 |0.48.x|WIP|
-|0.49.x|WIP|
+|0.49.x|1.49.0|[0.49-stable](https://github.com/Flipkart/DUS/tree/0.49-stable)
 |0.50.x|WIP|
 |0.51.x|WIP|
 |0.52.x|WIP|
@@ -240,7 +240,7 @@ For advanced usage please refer this doc(\*link\*).
 
 ## Sample Project
 
-[https://github.com/surya-kanoria/DUS-Sample-App](https://github.com/surya-kanoria/DUS-Sample-App)
+[https://github.com/surya-kanoria/DUS-Sample-App/tree/0.49-stable](https://github.com/surya-kanoria/DUS-Sample-App/tree/0.49-stable)
 
 ## Contributing
 
