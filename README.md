@@ -1,5 +1,18 @@
 # DUS - Dynamic Update Service
-__DUS__ is a Over The Air (__OTA__) update system that allows React Native developers to deploy mobile app updates directly to the devices of the users. This system has the following features:
+__DUS__ is a Over The Air (__OTA__) update system that allows React Native developers to deploy mobile app updates directly to the devices of the users. It allows you to use your own servers to maintain release patches and provides configurability in the way these patches are downloaded on your Native Apps.
+
+* **[Features](#features)**
+* **[Why DUS?](#why-dus)**
+* **[How it works?](#how-it-works)**
+* **[Setup](#setup)**
+    * **[Integration (For Android)](integration-for-android)**
+* **[Deployment](#deployment)**
+* **[Sample Project](#sample-project)**
+* **[Contributing](#contributing)**
+* **[License](#license)**
+* **[Contact us](#contact-us)**
+
+## Features
 
 * __Differential downloading__ - Incase a React Native bundle is already present on the device, it downloads just the components that has changed and not the entire new bundle.
 * __Multiple bundles__ - It allows more than one bundles to be deployed on just one application which improves the load time by reducing the parse time of the bundle and allow different teams to maintain their own React Native bundles.
@@ -7,7 +20,15 @@ __DUS__ is a Over The Air (__OTA__) update system that allows React Native devel
 * __Instant Updates__ - Once an update is released, it guarantees that only the latest bundle is run on the device and not an older bundle from the cache.
 * __Flexibility__ - It allows complete flexibility in the way update patches are kept on your server and the network calls that the app makes to fetch the update patch.
 
-## How it works (WIP)
+## Why DUS?
+
+Once a React Native application is released, updating the code involves a recompilation of the new code and releasing a fresh APK/IPA. The adoption of the new APK/IPA and the review time associated with the review process makes it difficult for your latest code to reach your entire users instantly.
+
+DUS allows you to push your latest improvements/bug fixes to all your users instantly. This introduces the agility of web into your Native Applications. It also allows multiple teams to work on the same applications where each team maintains and releases their React Native bundles for their own screens without affecting other bundles.
+
+During the update process, DUS only downloads the missing/changed components in your React Native code reducing the download size by ~90%. While React Native does not allow sharing of code across multiple bundles, DUS avoids redundant download of common code during the bundle creation process at the native clients. 
+
+## How it works? (WIP)
 
 Dus Deployer pulls the repositories specified in a configuration file called ``DeploymentConfig.json`` creates a bundle for each repository, splits it into chunks and generates update patches which contains a config called **Update Graph** for each version of the Android/iOS application. These patches are then uploaded to the server and the chunks are uploaded to a key-value storage pair/CDN. 
 
@@ -197,6 +218,7 @@ The easiest way to contribute is by [forking the repo](https://help.github.com/a
 * iOS support [WIP]
 * Adding support for other versions of React Native. [WIP]
 * Docs for integration with CI [WIP]
+* Assets support
 * Adding Wiki.
 * Completing TODOs
 * Writing unit tests.
