@@ -29,12 +29,11 @@ if (fs.pathExistsSync('ReactBundles')) {
 
 
 var argv = require('yargs')
-    .string('config').describe('config','DeploymentConfig for the deployer')
-    .choices('platform',['android','ios']).describe('platform', 'platform to generate bundles for')
-    .string('updateGraphVersion').describe('updateGraphVersion','Enter a update graph version higher than the previous deployment')
+    .string('config').describe('config', 'DeploymentConfig for the deployer')
+    .choices('platform', ['android', 'ios']).describe('platform', 'platform to generate bundles for')
+    .string('updateGraphVersion').describe('updateGraphVersion', 'Enter a update graph version higher than the previous deployment')
     .string('outputPath')
-    .string('prodUpdateGraph').describe('prodUpdateGraph','filepath of update patch already in production')
-    .boolean('react16')
+    .string('prodUpdateGraph').describe('prodUpdateGraph', 'filepath of update patch already in production')
     .argv;
 var deploymentConfigFile = fs.readFileSync(argv.config, { encoding: 'utf-8' });
 var deploymentConfig = JSON.parse(deploymentConfigFile);
@@ -56,8 +55,8 @@ deploymentConfig.deploymentJob.forEach(function (deploymentJob, index) {
         /**replacing index.js in mode_modules/react-native/packager/react-packager/src/Bundle/index.js
          * with custom implementation of module id generation
          */
-        // fs.copySync(path.join(__dirname, 'index.js'), path.join('repositories', index.toString(), 'fk-react-native', 'node_modules',
-            // 'react-native', 'packager', 'react-packager', 'src', 'Bundle', 'index.js'), { overwrite: true });
+        fs.copySync(path.join(__dirname, 'index.js'), path.join('repositories', index.toString(), 'fk-react-native', 'node_modules',
+            'metro-bundler', 'src', 'Bundler', 'index.js'), { overwrite: true });
         /**
          * running precompile script for each deployment job
          */
@@ -67,22 +66,12 @@ deploymentConfig.deploymentJob.forEach(function (deploymentJob, index) {
         /**
          * Generating the react native bundle
          */
-        if (argv.react16) {
-            if (argv.platform === 'android') {
-                executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native') + ' && ' +
-                    'react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output ../../../bundles/' + index + '.bundle');
-            } else {
-                executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native') + ' && ' +
-                    'react-native bundle --platform ios --dev false --entry-file index.ios.js --bundle-output ../../../bundles/' + index + '.bundle');
-            }
+        if (argv.platform === 'android') {
+            executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native') + ' && ' +
+                'react-native bundle --platform android --dev false --entry-file index.android.js --bundle-output ../../../bundles/' + index + '.bundle');
         } else {
-            if (argv.platform === 'android') {
-                executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native') + ' && ' +
-                    'react-native bundle --platform android --dev false --minify true --entry-file index.android.js --bundle-output ../../../bundles/' + index + '.bundle');
-            } else {
-                executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native') + ' && ' +
-                    'react-native bundle --platform ios --dev false --minify true --entry-file index.ios.js --bundle-output ../../../bundles/' + index + '.bundle')
-            }
+            executeShellCommand('cd ' + path.join('repositories', index.toString(), 'fk-react-native') + ' && ' +
+                'react-native bundle --platform ios --dev false --entry-file index.ios.js --bundle-output ../../../bundles/' + index + '.bundle');
         }
         /**Copying the generated bundles to respective app versions directory */
         deploymentJob.appVersions.forEach(function (appVersion) {

@@ -63,7 +63,7 @@ We are doing our best to support each React Native version and respond to new Re
 |0.44.x|WIP|
 |0.45.x|WIP|
 |0.46.x|WIP|
-|0.47.x|1.47.8|0.47-stable|
+|0.47.x|1.47.11|[0.47-stable](https://github.com/Flipkart/DUS/tree/0.47-stable)|
 |0.48.x|WIP|
 |0.49.x|WIP|
 |0.50.x|WIP|
