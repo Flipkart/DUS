@@ -3,7 +3,7 @@ __DUS__ is a Over The Air (__OTA__) update system that allows React Native devel
 
 * **[Features](#features)**
 * **[Why DUS?](#why-dus)**
-* **[How it works?](#how-it-works)**
+* **[How it works?](#how-it-works-wip)**
 * **[Setup](#setup)**
     * **[Integration (For Android)](integration-for-android)**
 * **[Deployment](#deployment)**
