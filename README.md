@@ -29,7 +29,7 @@ DUS allows you to push your latest improvements/bug fixes to all your users inst
 
 During the update process, DUS only downloads the missing/changed components in your React Native code reducing the download size by ~90%. While React Native does not allow sharing of code across multiple bundles, DUS avoids redundant download of common code during the bundle creation process at the native clients. 
 
-## How it works? (WIP)
+## How it works?
 
 Dus Deployer pulls the repositories specified in a configuration file called ``DeploymentConfig.json`` creates a bundle for each repository, splits it into chunks and generates update patches which contains a config called **Update Graph** for each version of the Android/iOS application. These patches are then uploaded to the server and the chunks are uploaded to a key-value storage pair/CDN. 
 
@@ -64,7 +64,7 @@ We are doing our best to support each React Native version and respond to new Re
 |0.45.x|WIP|
 |0.46.x|WIP|
 |0.47.x|1.47.11|[0.47-stable](https://github.com/Flipkart/DUS/tree/0.47-stable)|
-|0.48.x|WIP|
+|0.48.x|1.48.3|[0.48-stable](https://github.com/Flipkart/DUS/tree/0.47-stable)|
 |0.49.x|1.49.0|[0.49-stable](https://github.com/Flipkart/DUS/tree/0.49-stable)
 |0.50.x|WIP|
 |0.51.x|WIP|
@@ -225,11 +225,11 @@ The specifications of these dependencies can be found [here](https://github.com/
 }
   ```
 * Run the following command to generate the update patch for your application:
-  ``dus-deployer --config DeploymentConfig.json --platform android --react16 true --updateGraphVersion <updateGraphVersion> --outputPath output --prodUpdateGraph <Update Patch generated during last deployment>
+  ``dus-deployer --config DeploymentConfig.json --platform android --updateGraphVersion <updateGraphVersion> --outputPath output --prodUpdateGraph <Update Patch generated during last deployment>
 ``  
 
 	A Sample command would look like this:
- ``dus-deployer --config DeploymentConfig.json --platform android --react16 true --updateGraphVersion 0.0.0.0 --outputPath output --prodUpdateGraph output/UpdatePatch.json``
+ ``dus-deployer --config DeploymentConfig.json --platform android --updateGraphVersion 0.0.0.0 --outputPath output --prodUpdateGraph output/UpdatePatch.json``
 
 
 
@@ -240,7 +240,7 @@ For advanced usage please refer this doc(\*link\*).
 
 ## Sample Project
 
-[https://github.com/surya-kanoria/DUS-Sample-App/tree/0.49-stable](https://github.com/surya-kanoria/DUS-Sample-App/tree/0.49-stable)
+[https://github.com/surya-kanoria/DUS-Sample-App](https://github.com/surya-kanoria/DUS-Sample-App)
 
 ## Contributing
 
