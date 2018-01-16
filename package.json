@@ -1,6 +1,6 @@
 {
   "name": "dus-deployer",
-  "version": "1.47.11",
+  "version": "1.48.3",
   "description": "Deployment system for DUS",
   "main": "index.js",
   "scripts": {
@@ -23,11 +23,12 @@
   },
   "homepage": "https://github.com/Flipkart/DUS#readme",
   "peerDependencies": {
-    "react-native": "^0.47.2"
+    "react-native": "^0.48.0"
   },
   "dependencies": {
     "fs-extra": "^5.0.0",
     "md5": "^2.2.1",
+    "react-native": "^0.48.4",
     "shelljs": "^0.7.8",
     "yargs": "^10.0.3"
   }
