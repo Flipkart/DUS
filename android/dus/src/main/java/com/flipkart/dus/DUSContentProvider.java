@@ -136,10 +136,10 @@ public class DUSContentProvider extends ContentProvider {
                     } else {
                         String filePath = getFileHelper().getFilePath(getScreenMaker().getFileKey(screenType));
                         if (TextUtils.isEmpty(filePath)) {
-                            shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
                             screenInfo = new ScreenInfo();
                             screenInfo.status = DUSContracts.LOADING;
                             mCachedScreenInfo.put(screenType, screenInfo);
+                            shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
                             cursor = generateResponse(DUSContracts.LOADING, "");
                         } else {
                             screenInfo = new ScreenInfo();
