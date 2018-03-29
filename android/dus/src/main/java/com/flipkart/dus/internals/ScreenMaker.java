@@ -3,6 +3,7 @@ package com.flipkart.dus.internals;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
@@ -61,7 +62,12 @@ public class ScreenMaker {
                     screenTypeBeingProcessed.remove(screenType);
                 }
             } else {
-                fetchComponents(screenType, context, componentsKeys);
+                AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        fetchComponents(screenType, context, componentsKeys);
+                    }
+                });
             }
         }
         return refreshGraph;
