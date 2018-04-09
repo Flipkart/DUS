@@ -259,10 +259,14 @@ public class DUSContentProvider extends ContentProvider {
                 break;
             case DUSContracts.JS_BUNDLE:
                 if (selectionArgs != null) {
+                    //Removing screentypes of those pages for which we are refreshing the bundles
                     for (String screenType :
                             selectionArgs) {
                         mCachedScreenInfo.remove(screenType);
                     }
+                    //Removing bundle files for all pages. We try to keep
+                    //all the bundle files which belong to the list of the files that needs to be deleted
+                    //but already have a bundle formed with the latest update graph version
                     ArrayList<String> filesToKeep = new ArrayList<>(selectionArgs.length);
                     for (String screenType : selectionArgs) {
                         filesToKeep.add(getScreenMaker().getFileKey(screenType));
@@ -271,6 +275,7 @@ public class DUSContentProvider extends ContentProvider {
                 }
                 break;
             case DUSContracts.CLEAR:
+                mCachedScreenInfo.clear();
                 getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
                 getFileHelper().deleteAllFiles();
         }
