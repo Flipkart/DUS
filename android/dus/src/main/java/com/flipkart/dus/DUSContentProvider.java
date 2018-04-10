@@ -269,7 +269,7 @@ public class DUSContentProvider extends ContentProvider {
                     //but already have a bundle formed with the latest update graph version
                     ArrayList<String> filesToKeep = new ArrayList<>(selectionArgs.length);
                     for (String screenType : selectionArgs) {
-                        filesToKeep.add(getScreenMaker().getFileKey(screenType));
+                        filesToKeep.add(screenType);
                     }
                     getFileHelper().deleteRestOfFiles(filesToKeep);
                 }
@@ -366,7 +366,9 @@ public class DUSContentProvider extends ContentProvider {
         Log.d(TAG, "Getting authority: " + DUSContracts.CONTENT_AUTHORITY);
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_BUNDLE + "/*", DUSContracts.JS_BUNDLE);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_BUNDLE, DUSContracts.JS_BUNDLE);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS + "/*", DUSContracts.JS_COMPONENTS);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS, DUSContracts.JS_COMPONENTS);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_UPDATEGRAPH, DUSContracts.UPDATE_GRAPH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR, DUSContracts.CLEAR);
         super.attachInfo(context, info);
