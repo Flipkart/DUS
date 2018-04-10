@@ -259,18 +259,23 @@ public class DUSContentProvider extends ContentProvider {
                 break;
             case DUSContracts.JS_BUNDLE:
                 if (selectionArgs != null) {
+                    //Removing screentypes of those pages for which we are refreshing the bundles
                     for (String screenType :
                             selectionArgs) {
                         mCachedScreenInfo.remove(screenType);
                     }
+                    //Removing bundle files for all pages. We try to keep
+                    //all the bundle files which belong to the list of the files that needs to be deleted
+                    //but already have a bundle formed with the latest update graph version
                     ArrayList<String> filesToKeep = new ArrayList<>(selectionArgs.length);
                     for (String screenType : selectionArgs) {
-                        filesToKeep.add(getScreenMaker().getFileKey(screenType));
+                        filesToKeep.add(screenType);
                     }
                     getFileHelper().deleteRestOfFiles(filesToKeep);
                 }
                 break;
             case DUSContracts.CLEAR:
+                mCachedScreenInfo.clear();
                 getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
                 getFileHelper().deleteAllFiles();
         }
@@ -361,7 +366,9 @@ public class DUSContentProvider extends ContentProvider {
         Log.d(TAG, "Getting authority: " + DUSContracts.CONTENT_AUTHORITY);
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_BUNDLE + "/*", DUSContracts.JS_BUNDLE);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_BUNDLE, DUSContracts.JS_BUNDLE);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS + "/*", DUSContracts.JS_COMPONENTS);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS, DUSContracts.JS_COMPONENTS);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_UPDATEGRAPH, DUSContracts.UPDATE_GRAPH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR, DUSContracts.CLEAR);
         super.attachInfo(context, info);
