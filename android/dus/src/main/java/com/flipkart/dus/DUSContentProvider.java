@@ -11,6 +11,7 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -255,7 +256,12 @@ public class DUSContentProvider extends ContentProvider {
         getLoggerInstance().log("[SYNC] [DELETE]" + uri.toString());
         switch (sUriMatcher.match(uri)) {
             case DUSContracts.JS_COMPONENTS:
-                getDatabaseHelper().getWritableDatabase().execSQL("DELETE FROM " + TABLE_COMPONENTS + selection);
+                try {
+                    getDatabaseHelper().getWritableDatabase().execSQL("DELETE FROM " + TABLE_COMPONENTS + selection);
+                } catch (SQLiteException e) {
+                    //Do nothing. This is a rare case and the database file
+                    //should get deleted when the db is opened the next time
+                }
                 break;
             case DUSContracts.JS_BUNDLE:
                 if (selectionArgs != null) {
@@ -297,16 +303,21 @@ public class DUSContentProvider extends ContentProvider {
         getLoggerInstance().log("[SYNC] [BULK_INSERT] " + uri.toString());
         switch (sUriMatcher.match(uri)) {
             case DUSContracts.JS_COMPONENTS: {
-                SQLiteDatabase database = getDatabaseHelper().getWritableDatabase();
-                database.beginTransaction();
                 try {
-                    for (ContentValues contentValue :
-                            values) {
-                        database.insertWithOnConflict(TABLE_COMPONENTS, null, contentValue, SQLiteDatabase.CONFLICT_REPLACE);
+                    SQLiteDatabase database = getDatabaseHelper().getWritableDatabase();
+                    database.beginTransaction();
+                    try {
+                        for (ContentValues contentValue :
+                                values) {
+                            database.insertWithOnConflict(TABLE_COMPONENTS, null, contentValue, SQLiteDatabase.CONFLICT_REPLACE);
+                        }
+                        database.setTransactionSuccessful();
+                    } finally {
+                        database.endTransaction();
                     }
-                    database.setTransactionSuccessful();
-                } finally {
-                    database.endTransaction();
+                } catch (SQLiteException e) {
+                    //Do nothing. This is a rare case and the database file
+                    //should get deleted when the db is opened the next time
                 }
             }
         }
