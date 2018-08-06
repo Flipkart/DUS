@@ -1,15 +1,23 @@
 apply plugin: 'com.android.library'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    compileSdkVersion 27
+    buildToolsVersion "27.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 23
+        targetSdkVersion 27
         versionCode 1
         versionName "1.0"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [
+                        stagGeneratedPackageName: 'com.flipkart.dus.stag.generated',
+                        stagDebug               : 'false'
+                ]
+            }
+        }
     }
     buildTypes {
         release {
@@ -17,27 +25,20 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    buildToolsVersion '25.0.0'
-}
-
-apt {
-    arguments {
-        stagGeneratedPackageName "com.flipkart.dus.stag.generated"
-    }
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
 
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.google.code.gson:gson:2.8.0'
-    compile 'com.android.support:support-annotations:25.3.1'
-    testCompile 'org.robolectric:robolectric:3.0'
-    testCompile 'org.mockito:mockito-core:1.10.8'
-    compile 'com.vimeo.stag:stag-library:2.1.2'
+    compile 'com.android.support:appcompat-v7:27.1.1'
+    compile 'com.google.code.gson:gson:2.8.5'
+    compile 'com.android.support:support-annotations:27.1.1'
+    testCompile 'org.robolectric:robolectric:3.3.2'
+    testCompile 'org.mockito:mockito-core:2.18.0'
+    compile 'com.vimeo.stag:stag-library:2.5.1'
     compile 'com.facebook.react:react-native:0.47.+'
-    apt 'com.vimeo.stag:stag-library-compiler:2.1.2'
+    annotationProcessor 'com.vimeo.stag:stag-library-compiler:2.5.1'
 }
 
 apply plugin: 'artifactory'
@@ -45,21 +46,22 @@ apply plugin: 'artifactory'
 allprojects {
     repositories {
         jcenter()
+        google()
         maven { url "https://plugins.gradle.org/m2/" }
-
     }
 }
 
 buildscript {
     repositories {
         jcenter()
+        google()
         maven { url 'https://maven.fabric.io/public' }
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.2.0'
+        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
-        classpath 'com.neenbedankt.gradle.plugins:android-apt:1.8'
         // NOTE: Do not place your application dependencies here; they belong
         // in the individual module build.gradle files
     }

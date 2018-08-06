@@ -6,10 +6,11 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
+import com.flipkart.dus.models.FileConfig;
+import com.flipkart.dus.models.FileConfig$TypeAdapter;
 import com.flipkart.dus.utilities.FileHelper;
 import com.flipkart.dus.utilities.GsonHelper;
-import com.flipkart.dus.models.FileConfig;
-import com.google.gson.Gson;
+import com.google.gson.TypeAdapter;
 
 import java.io.IOException;
 
@@ -30,11 +31,11 @@ public class FileConfigHelper {
     @NonNull
     private static final String DATABASE_VERSION = "DatabaseVersion";
     @NonNull
+    private static final String OPTIMIZE = "Optimize";
+    @NonNull
     private final FileHelper mFileHelper;
     private final SharedPreferences mSharedPreferences;
     private FileConfig mActiveConfig;
-    @NonNull
-    private static final String OPTIMIZE = "Optimize";
 
 
     public FileConfigHelper(@NonNull FileHelper fileHelper, @NonNull Context context) {
@@ -49,12 +50,13 @@ public class FileConfigHelper {
         Runnable updateTask = new Runnable() {
             @Override
             public void run() {
-                String json = GsonHelper.getReactStagFactory().getFileConfig$TypeAdapter(GsonHelper.getGsonInstance()).toJson(newFileConfig);
+                TypeAdapter<FileConfig> adapter = GsonHelper.getGsonInstance().getAdapter(FileConfig$TypeAdapter.TYPE_TOKEN);
+                String json = GsonHelper.toJson(adapter, newFileConfig);
                 try {
                     deleteActiveConfig();
                     mFileHelper.createFile(CURRENT_CONFIG, json);
                     if (previousConfig != null) {
-                        String previousJson = GsonHelper.getReactStagFactory().getFileConfig$TypeAdapter(GsonHelper.getGsonInstance()).toJson(previousConfig);
+                        String previousJson = GsonHelper.toJson(adapter, previousConfig);
                         mFileHelper.createFile(PREVIOUS_CONFIG, previousJson);
                     }
                 } catch (IOException e) {
@@ -71,8 +73,8 @@ public class FileConfigHelper {
             String activeConfigJson = mFileHelper.readFile(CURRENT_CONFIG);
             if (activeConfigJson != null && !activeConfigJson.isEmpty()) {
                 try {
-                    Gson gson = GsonHelper.getGsonInstance();
-                    mActiveConfig = GsonHelper.getReactStagFactory().getFileConfig$TypeAdapter(gson).fromJson(activeConfigJson);
+                    TypeAdapter<FileConfig> adapter = GsonHelper.getGsonInstance().getAdapter(FileConfig$TypeAdapter.TYPE_TOKEN);
+                    mActiveConfig = adapter.fromJson(activeConfigJson);
                 } catch (Exception e) {
                     //If the file is corrupt, we do not want it to crash the app
                 }
