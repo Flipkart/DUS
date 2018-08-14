@@ -14,14 +14,15 @@ import android.text.TextUtils;
 import com.flipkart.dus.DUSConstants;
 import com.flipkart.dus.DUSContracts;
 import com.flipkart.dus.DusDependencyResolver;
-import com.flipkart.dus.dependencies.ErrorResponse;
-import com.flipkart.dus.utilities.FileHelper;
-import com.flipkart.dus.utilities.GsonHelper;
 import com.flipkart.dus.dependencies.DusLogger;
+import com.flipkart.dus.dependencies.ErrorResponse;
 import com.flipkart.dus.dependencies.ResponseInterface;
 import com.flipkart.dus.models.ComponentMetaModel;
 import com.flipkart.dus.models.PlaceHolderStructure;
-import com.google.gson.Gson;
+import com.flipkart.dus.models.PlaceHolderStructure$TypeAdapter;
+import com.flipkart.dus.utilities.FileHelper;
+import com.flipkart.dus.utilities.GsonHelper;
+import com.google.gson.TypeAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -34,9 +35,9 @@ import java.util.Map;
  */
 
 public class ScreenMaker {
-    private FileHelper mFileHelper;
     @NonNull
     private final HashSet<String> screenTypeBeingProcessed = new HashSet<>();
+    private FileHelper mFileHelper;
     private ComponentDownloader mComponentDownloader;
     private UpdateGraphManager mUpdateGraphManager;
 
@@ -132,8 +133,8 @@ public class ScreenMaker {
         if (!TextUtils.isEmpty(componentStructureJson)) {
             PlaceHolderStructure componentStructure = null;
             try {
-                Gson gson = GsonHelper.getGsonInstance();
-                componentStructure = GsonHelper.getReactStagFactory().getPlaceHolderStructure$TypeAdapter(gson).fromJson(componentStructureJson);
+                TypeAdapter<PlaceHolderStructure> typeAdapter = GsonHelper.getGsonInstance().getAdapter(PlaceHolderStructure$TypeAdapter.TYPE_TOKEN);
+                componentStructure = typeAdapter.fromJson(componentStructureJson);
             } catch (Exception e) {
                 sendErrorResponse(screenName, context);
             }
