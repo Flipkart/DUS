@@ -45,24 +45,6 @@ We are doing our best to support each React Native version and respond to new Re
 
 |React Native Version   | DUS Version   |Branch Name|
 |:-----------------------|:-------------|-----------|
-|<0.30|WIP
-|0.30.x|WIP|
-|0.31.x|WIP|
-|0.32.x|WIP|
-|0.33.x|WIP|
-|0.34.x|WIP|
-|0.35.x|WIP|
-|0.36.x|WIP|
-|0.37.x|WIP|
-|0.38.x|WIP|
-|0.39.x|WIP|
-|0.40.x|WIP|
-|0.41.x|WIP|
-|0.42.x|WIP|
-|0.43.x|WIP|
-|0.44.x|WIP|
-|0.45.x|WIP|
-|0.46.x|WIP|
 |0.47.x|1.47.11|[0.47-stable](https://github.com/Flipkart/DUS/tree/0.47-stable)|
 |0.48.x|1.48.3|[0.48-stable](https://github.com/Flipkart/DUS/tree/0.47-stable)|
 |0.49.x|1.49.0|[0.49-stable](https://github.com/Flipkart/DUS/tree/0.49-stable)
