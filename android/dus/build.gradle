@@ -1,12 +1,12 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 27
-    buildToolsVersion "27.0.3"
+    compileSdkVersion 28
+    buildToolsVersion "28.0.3"
 
     defaultConfig {
         minSdkVersion 16
-        targetSdkVersion 27
+        targetSdkVersion 28
         versionCode 1
         versionName "1.0"
 
@@ -28,16 +28,16 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
 
-    testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:27.1.1'
-    compile 'com.google.code.gson:gson:2.8.5'
-    compile 'com.android.support:support-annotations:27.1.1'
-    testCompile 'org.robolectric:robolectric:3.3.2'
-    testCompile 'org.mockito:mockito-core:2.18.0'
-    compile 'com.vimeo.stag:stag-library:2.5.1'
-    compile 'com.facebook.react:react-native:+'
+    testImplementation 'junit:junit:4.12'
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation 'com.google.code.gson:gson:2.8.5'
+    implementation 'com.android.support:support-annotations:28.0.0'
+    testImplementation 'org.robolectric:robolectric:3.3.2'
+    testImplementation 'org.mockito:mockito-core:2.18.0'
+    implementation 'com.vimeo.stag:stag-library:2.5.1'
+    implementation 'com.facebook.react:react-native:0.59.8.1'
     annotationProcessor 'com.vimeo.stag:stag-library-compiler:2.5.1'
 }
 
@@ -59,7 +59,7 @@ buildscript {
         maven { url 'https://plugins.gradle.org/m2/' }
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:2.3.3'
+        classpath 'com.android.tools.build:gradle:3.3.1'
         classpath 'com.github.dcendents:android-maven-gradle-plugin:1.5'
         classpath 'org.jfrog.buildinfo:build-info-extractor-gradle:2.2.3'
         // NOTE: Do not place your application dependencies here; they belong
@@ -71,4 +71,56 @@ task sourceJar(type: Jar) {
     from android.sourceSets.main.java.srcDirs
     classifier "sources"
 }
+
+apply plugin: 'maven-publish'
+
+publishing {
+    repositories {
+        maven {
+            url 'http://artifactory.fkinternal.com/artifactory/v1.0/artifacts/' + "libs-${project.version.endsWith('-SNAPSHOT') ? 'snapshots' : 'release'}-local"
+        }
+    }
+    publications {
+        maven(MavenPublication) {
+            groupId 'com.flipkart.dus'
+            artifactId 'dus'
+            version '0.0.99-ReactBump-1'
+// Or use same version as in android branch
+// version = android.defaultConfig.versionName
+
+            artifact bundleReleaseAar
+
+            pom.withXml {
+                def dependenciesNode = asNode().appendNode('dependencies')
+
+// List all compile dependencies and write to POM
+                configurations.implementation.getAllDependencies().each { Dependency dep ->
+                    if (dep.group == null || dep.version == null || dep.name == null || dep.name == "unspecified")
+                        return // ignore invalid dependencies
+
+                    def dependencyNode = dependenciesNode.appendNode('dependency')
+                    dependencyNode.appendNode('groupId', dep.group)
+                    dependencyNode.appendNode('artifactId', dep.name)
+                    dependencyNode.appendNode('version', dep.version)
+
+                    if (!dep.transitive) {
+// If this dependency is transitive, we should force exclude all its dependencies them from the POM
+                        def exclusionNode = dependencyNode.appendNode('exclusions').appendNode('exclusion')
+                        exclusionNode.appendNode('groupId', '*')
+                        exclusionNode.appendNode('artifactId', '*')
+                    } else if (!dep.properties.excludeRules.empty) {
+// Otherwise add specified exclude rules
+                        def exclusionsNode = dependencyNode.appendNode('exclusions')
+                        dep.properties.excludeRules.each { ExcludeRule rule ->
+                            def exclusionNode = exclusionsNode.appendNode('exclusion')
+                            exclusionNode.appendNode('groupId', rule.group ?: '*')
+                            exclusionNode.appendNode('artifactId', rule.module ?: '*')
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 
