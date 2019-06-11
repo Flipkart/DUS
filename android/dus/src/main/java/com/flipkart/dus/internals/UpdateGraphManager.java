@@ -122,7 +122,15 @@ public class UpdateGraphManager {
                 fileConfig.getCurrentUpdateGraph().entrySet()) {
             componentList.addAll(screenList.getValue());
         }
+        String[] fileList = new String[fileConfig.getCurrentUpdateGraph().size()];
         context.getContentResolver().delete(DUSContracts.buildFetchContentsUri(""), DUSContracts.getOptimizeStorageWhereQuery(componentList), null);
+        int i = 0;
+        for (String file : fileConfig.getCurrentUpdateGraph().keySet()) {
+            fileList[i] = generateFileKey(file);
+            i++;
+        }
+        context.getContentResolver().delete(DUSContracts.buildFetchPageUri(""), null, fileList);
+        mFileConfigHelper.setShouldOptimize(false);
     }
 
     @Nullable

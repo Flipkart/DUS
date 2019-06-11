@@ -11,6 +11,7 @@ import android.content.pm.ProviderInfo;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -136,10 +137,10 @@ public class DUSContentProvider extends ContentProvider {
                     } else {
                         String filePath = getFileHelper().getFilePath(getScreenMaker().getFileKey(screenType));
                         if (TextUtils.isEmpty(filePath)) {
-                            shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
                             screenInfo = new ScreenInfo();
                             screenInfo.status = DUSContracts.LOADING;
                             mCachedScreenInfo.put(screenType, screenInfo);
+                            shouldRefresh = getScreenMaker().fetchPage(screenType, getContext());
                             cursor = generateResponse(DUSContracts.LOADING, "");
                         } else {
                             screenInfo = new ScreenInfo();
@@ -255,22 +256,32 @@ public class DUSContentProvider extends ContentProvider {
         getLoggerInstance().log("[SYNC] [DELETE]" + uri.toString());
         switch (sUriMatcher.match(uri)) {
             case DUSContracts.JS_COMPONENTS:
-                getDatabaseHelper().getWritableDatabase().execSQL("DELETE FROM " + TABLE_COMPONENTS + selection);
+                try {
+                    getDatabaseHelper().getWritableDatabase().execSQL("DELETE FROM " + TABLE_COMPONENTS + selection);
+                } catch (SQLiteException e) {
+                    //Do nothing. This is a rare case and the database file
+                    //should get deleted when the db is opened the next time
+                }
                 break;
             case DUSContracts.JS_BUNDLE:
                 if (selectionArgs != null) {
+                    //Removing screentypes of those pages for which we are refreshing the bundles
                     for (String screenType :
                             selectionArgs) {
                         mCachedScreenInfo.remove(screenType);
                     }
+                    //Removing bundle files for all pages. We try to keep
+                    //all the bundle files which belong to the list of the files that needs to be deleted
+                    //but already have a bundle formed with the latest update graph version
                     ArrayList<String> filesToKeep = new ArrayList<>(selectionArgs.length);
                     for (String screenType : selectionArgs) {
-                        filesToKeep.add(getScreenMaker().getFileKey(screenType));
+                        filesToKeep.add(screenType);
                     }
                     getFileHelper().deleteRestOfFiles(filesToKeep);
                 }
                 break;
             case DUSContracts.CLEAR:
+                mCachedScreenInfo.clear();
                 getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
                 getFileHelper().deleteAllFiles();
         }
@@ -292,16 +303,21 @@ public class DUSContentProvider extends ContentProvider {
         getLoggerInstance().log("[SYNC] [BULK_INSERT] " + uri.toString());
         switch (sUriMatcher.match(uri)) {
             case DUSContracts.JS_COMPONENTS: {
-                SQLiteDatabase database = getDatabaseHelper().getWritableDatabase();
-                database.beginTransaction();
                 try {
-                    for (ContentValues contentValue :
-                            values) {
-                        database.insertWithOnConflict(TABLE_COMPONENTS, null, contentValue, SQLiteDatabase.CONFLICT_REPLACE);
+                    SQLiteDatabase database = getDatabaseHelper().getWritableDatabase();
+                    database.beginTransaction();
+                    try {
+                        for (ContentValues contentValue :
+                                values) {
+                            database.insertWithOnConflict(TABLE_COMPONENTS, null, contentValue, SQLiteDatabase.CONFLICT_REPLACE);
+                        }
+                        database.setTransactionSuccessful();
+                    } finally {
+                        database.endTransaction();
                     }
-                    database.setTransactionSuccessful();
-                } finally {
-                    database.endTransaction();
+                } catch (SQLiteException e) {
+                    //Do nothing. This is a rare case and the database file
+                    //should get deleted when the db is opened the next time
                 }
             }
         }
@@ -361,7 +377,9 @@ public class DUSContentProvider extends ContentProvider {
         Log.d(TAG, "Getting authority: " + DUSContracts.CONTENT_AUTHORITY);
         sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_BUNDLE + "/*", DUSContracts.JS_BUNDLE);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_BUNDLE, DUSContracts.JS_BUNDLE);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS + "/*", DUSContracts.JS_COMPONENTS);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS, DUSContracts.JS_COMPONENTS);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_UPDATEGRAPH, DUSContracts.UPDATE_GRAPH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR, DUSContracts.CLEAR);
         super.attachInfo(context, info);
