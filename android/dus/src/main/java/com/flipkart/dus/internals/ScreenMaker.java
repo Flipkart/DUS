@@ -3,6 +3,9 @@ package com.flipkart.dus.internals;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabaseCorruptException;
+import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.util.ArrayMap;
@@ -62,7 +65,12 @@ public class ScreenMaker {
                     screenTypeBeingProcessed.remove(screenType);
                 }
             } else {
-                fetchComponents(screenType, context, componentsKeys);
+                AsyncTask.THREAD_POOL_EXECUTOR.execute(new Runnable() {
+                    @Override
+                    public void run() {
+                        fetchComponents(screenType, context, componentsKeys);
+                    }
+                });
             }
         }
         return refreshGraph;
@@ -72,19 +80,23 @@ public class ScreenMaker {
     private void fetchComponents(@NonNull final String screenName, @NonNull final Context context, @NonNull final ArrayList<String> componentsKeys) {
         ArrayList<String> keysToDownload = new ArrayList<>(componentsKeys.size());
         keysToDownload.addAll(componentsKeys);
-        Cursor cachedComponents = context.getContentResolver().query(DUSContracts.buildFetchContentsUri(screenName), null, DUSContracts.getComponentsQuery(componentsKeys), null, null);
         final ArrayMap<String, String> componentMap = new ArrayMap<>(componentsKeys.size());
-        if (cachedComponents != null) {
-            if (cachedComponents.getCount() > 0) {
-                cachedComponents.moveToFirst();
-                do {
-                    String key = cachedComponents.getString(cachedComponents.getColumnIndex(DatabaseHelper.COMPONENT_KEY));
-                    String value = cachedComponents.getString(cachedComponents.getColumnIndex(DatabaseHelper.COMPONENT_VALUE));
-                    componentMap.put(key, value);
-                    keysToDownload.remove(key);
-                } while (cachedComponents.moveToNext());
+        try {
+            Cursor cachedComponents = context.getContentResolver().query(DUSContracts.buildFetchContentsUri(screenName), null, DUSContracts.getComponentsQuery(componentsKeys), null, null);
+            if (cachedComponents != null) {
+                if (cachedComponents.getCount() > 0) {
+                    cachedComponents.moveToFirst();
+                    do {
+                        String key = cachedComponents.getString(cachedComponents.getColumnIndex(DatabaseHelper.COMPONENT_KEY));
+                        String value = cachedComponents.getString(cachedComponents.getColumnIndex(DatabaseHelper.COMPONENT_VALUE));
+                        componentMap.put(key, value);
+                        keysToDownload.remove(key);
+                    } while (cachedComponents.moveToNext());
+                }
+                cachedComponents.close();
             }
-            cachedComponents.close();
+        } catch (SQLException e) {
+            //DO nothing as the chunks would get downloaded.
         }
 
         if (keysToDownload.size() == 0) {

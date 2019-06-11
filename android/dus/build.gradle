@@ -37,7 +37,7 @@ dependencies {
     testCompile 'org.robolectric:robolectric:3.3.2'
     testCompile 'org.mockito:mockito-core:2.18.0'
     compile 'com.vimeo.stag:stag-library:2.5.1'
-    compile 'com.facebook.react:react-native:0.47.+'
+    compile 'com.facebook.react:react-native:+'
     annotationProcessor 'com.vimeo.stag:stag-library-compiler:2.5.1'
 }
 

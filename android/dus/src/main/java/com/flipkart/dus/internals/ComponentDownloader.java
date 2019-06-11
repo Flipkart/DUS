@@ -45,7 +45,7 @@ public class ComponentDownloader {
         mNetworkInterface.getResponseString(new ArrayList<>(downloadList), new ResponseInterface<HashMap<String, String>>() {
             @Override
             public void OnSuccess(@NonNull HashMap<String, String> networkResponse) {
-                if (networkResponse.size() != downloadJob.getComponentKeys().size()) {
+                if (networkResponse.size() != downloadList.size()) {
                     ErrorResponse errorResponse = new ErrorResponse();
                     errorResponse.setErrorResponse("Could not fetch all files");
                     clearCallbackMap();
