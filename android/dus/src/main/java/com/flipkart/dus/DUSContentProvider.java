@@ -13,8 +13,8 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -81,7 +81,7 @@ public class DUSContentProvider extends ContentProvider {
         if (mDatabaseHelper == null) {
             synchronized (this) {
                 if (mDatabaseHelper == null) {
-                    mDatabaseHelper = new DatabaseHelper(getContext(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbName());
+                    mDatabaseHelper = new DatabaseHelper(getContext(), getFileHelper(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbName(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbVersion());
                 }
             }
         }
