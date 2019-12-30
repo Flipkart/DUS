@@ -1,6 +1,6 @@
 package com.flipkart.dus;
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 /**
  * Created by surya.kanoria on 27/01/17.
