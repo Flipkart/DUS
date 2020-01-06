@@ -1,9 +1,12 @@
 package com.flipkart.dus.internals;
 
 import android.content.Context;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.flipkart.dus.DUSConstants;
 import com.flipkart.dus.DUSContracts;
@@ -76,6 +79,14 @@ public class UpdateGraphManager {
         return response;
     }
 
+    public int resetUpdateGraph(@NonNull Context context, boolean shouldRetry) {
+        Log.i("resetUpdateGraph", "resetUpdateGraph called");
+        mFileConfigHelper.updateFileConfig(null);
+        mFileConfig = null;
+        updateGraphStatus.set(DUSConstants.NONE);
+        return refreshUpdateGraph(context, shouldRetry);
+    }
+
     public int getUpdateGraphStatus() {
         return updateGraphStatus.get();
     }
@@ -139,7 +150,7 @@ public class UpdateGraphManager {
             mFileConfig = mFileConfigHelper.getActiveConfig();
         }
         /* Incase saved file gets corrupted, we will clear everything so that a fresh sync
-        * so that a fresh sync can be triggered*/
+         * so that a fresh sync can be triggered*/
         if (mFileConfig == null || mFileConfig.getCurrentUpdateGraph() == null) {
             mFileConfig = null;
             mFileConfigHelper.clear();
