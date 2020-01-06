@@ -221,9 +221,12 @@ public class ScreenMaker {
         return mUpdateGraphManager.generateFileKey(screenType);
     }
 
-    @NonNull
     public int refreshUpdateGraph(@NonNull Context context, boolean shouldRetry) {
         return mUpdateGraphManager.refreshUpdateGraph(context, shouldRetry);
+    }
+
+    public int resetUpdateGraph(@NonNull Context context, boolean shouldRetry) {
+        return mUpdateGraphManager.resetUpdateGraph(context, shouldRetry);
     }
 
     @NonNull

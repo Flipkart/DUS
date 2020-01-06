@@ -13,8 +13,10 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -281,11 +283,21 @@ public class DUSContentProvider extends ContentProvider {
                 }
                 break;
             case DUSContracts.CLEAR:
-                mCachedScreenInfo.clear();
-                getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
-                getFileHelper().deleteAllFiles();
+                purgeCacheAndDb();
+                break;
+            case DUSContracts.CLEAR_UG:
+                purgeCacheAndDb();
+                if (getContext() != null) {
+                    getScreenMaker().resetUpdateGraph(getContext(), true);
+                }
         }
         return 0;
+    }
+
+    private void purgeCacheAndDb() {
+        mCachedScreenInfo.clear();
+        getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
+        getFileHelper().deleteAllFiles();
     }
 
     @Override
@@ -382,6 +394,7 @@ public class DUSContentProvider extends ContentProvider {
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS, DUSContracts.JS_COMPONENTS);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_UPDATEGRAPH, DUSContracts.UPDATE_GRAPH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR, DUSContracts.CLEAR);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR_UG, DUSContracts.CLEAR_UG);
         super.attachInfo(context, info);
     }
 }
