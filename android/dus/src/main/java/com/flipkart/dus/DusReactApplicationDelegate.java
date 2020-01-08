@@ -6,7 +6,8 @@ import android.database.ContentObserver;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
 
 import com.facebook.react.ReactActivityDelegate;
@@ -14,7 +15,6 @@ import com.facebook.react.bridge.UiThreadUtil;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.annotation.Nullable;
 
 /**
  * Created by surya.kanoria on 08/01/18.

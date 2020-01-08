@@ -13,8 +13,10 @@ import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -81,7 +83,7 @@ public class DUSContentProvider extends ContentProvider {
         if (mDatabaseHelper == null) {
             synchronized (this) {
                 if (mDatabaseHelper == null) {
-                    mDatabaseHelper = new DatabaseHelper(getContext(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbName());
+                    mDatabaseHelper = new DatabaseHelper(getContext(), getFileHelper(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbName(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbVersion());
                 }
             }
         }
@@ -281,11 +283,21 @@ public class DUSContentProvider extends ContentProvider {
                 }
                 break;
             case DUSContracts.CLEAR:
-                mCachedScreenInfo.clear();
-                getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
-                getFileHelper().deleteAllFiles();
+                purgeCacheAndDb();
+                break;
+            case DUSContracts.CLEAR_UG:
+                purgeCacheAndDb();
+                if (getContext() != null) {
+                    getScreenMaker().resetUpdateGraph(getContext(), true);
+                }
         }
         return 0;
+    }
+
+    private void purgeCacheAndDb() {
+        mCachedScreenInfo.clear();
+        getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
+        getFileHelper().deleteAllFiles();
     }
 
     @Override
@@ -382,6 +394,7 @@ public class DUSContentProvider extends ContentProvider {
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_JS_COMPONENTS, DUSContracts.JS_COMPONENTS);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_UPDATEGRAPH, DUSContracts.UPDATE_GRAPH);
         sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR, DUSContracts.CLEAR);
+        sUriMatcher.addURI(DUSContracts.CONTENT_AUTHORITY, DUSContracts.PATH_CLEAR_UG, DUSContracts.CLEAR_UG);
         super.attachInfo(context, info);
     }
 }

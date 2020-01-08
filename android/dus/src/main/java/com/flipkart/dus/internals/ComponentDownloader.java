@@ -1,7 +1,7 @@
 package com.flipkart.dus.internals;
 
 
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.flipkart.dus.dependencies.ErrorResponse;
 import com.flipkart.dus.dependencies.ComponentRequestInterface;
