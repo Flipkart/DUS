@@ -1,7 +1,7 @@
 package com.flipkart.dus.models;
 
 import android.database.Cursor;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import com.flipkart.dus.internals.DatabaseHelper;
 

@@ -1,7 +1,7 @@
 package com.flipkart.dus;
 
 import android.net.Uri;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 
 import java.util.List;
 
@@ -37,6 +37,8 @@ public class DUSContracts {
     @NonNull
     static final String PATH_CLEAR = "clear";
     @NonNull
+    static final String PATH_CLEAR_UG = "clearUG";
+    @NonNull
     public static final String QUERY_SHOULD_RETRY = "shouldRetry";
     @NonNull
     public static final String QUERY_ERROR = "error";
@@ -54,6 +56,7 @@ public class DUSContracts {
     static final int JS_COMPONENTS = JS_BUNDLE + 1;
     static final int UPDATE_GRAPH = JS_BUNDLE + 2;
     static final int CLEAR = JS_BUNDLE + 3;
+    static final int CLEAR_UG = JS_BUNDLE + 4;
 
     @NonNull
     public static final String FILE_PATH = "filePath";
@@ -98,6 +101,10 @@ public class DUSContracts {
 
     public static Uri buildWipeAll() {
         return BASE_CONTENT_URI.buildUpon().appendPath(PATH_CLEAR).build();
+    }
+
+    public static Uri buildResetUG() {
+        return BASE_CONTENT_URI.buildUpon().appendPath(PATH_CLEAR_UG).build();
     }
 
     @NonNull

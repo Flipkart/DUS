@@ -4,9 +4,11 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import android.text.TextUtils;
+
+import com.flipkart.dus.utilities.FileHelper;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -43,10 +45,13 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final Context mContext;
     private String databasePath;
     private SharedPreferences mSharedPreferences;
+    @NonNull
+    private FileHelper fileHelper;
 
 
-    public DatabaseHelper(@NonNull Context context, @NonNull String importDatabaseName) {
-        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public DatabaseHelper(@NonNull Context context, @NonNull FileHelper fileHelper, @NonNull String importDatabaseName, int importDatabaseVersion) {
+        super(context, DATABASE_NAME, null, importDatabaseVersion);
+        this.fileHelper = fileHelper;
         if (context.getApplicationInfo() != null) {
             this.databasePath = context.getApplicationInfo().dataDir + "/databases/" + DATABASE_NAME;
         }
@@ -86,6 +91,7 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPONENTS);
         onCreate(db);
+        fileHelper.deleteAllFiles();
         //TODO: Set is database upgraded to false so that new database could be copied
     }
 
