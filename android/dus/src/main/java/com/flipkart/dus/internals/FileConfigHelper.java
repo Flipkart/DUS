@@ -3,6 +3,7 @@ package com.flipkart.dus.internals;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
@@ -22,8 +23,6 @@ public class FileConfigHelper {
     private static final String SHARED_PREFERENCES_KEY = "FileConfig";
     @NonNull
     private static final String CURRENT_CONFIG = "CurrentConfig";
-    @NonNull
-    private static final String ACTIVE_CONFIG = "ActiveConfig";
     @NonNull
     private static final String PREVIOUS_CONFIG = "PreviousConfig";
     @NonNull
@@ -53,7 +52,6 @@ public class FileConfigHelper {
                 TypeAdapter<FileConfig> adapter = GsonHelper.getGsonInstance().getAdapter(FileConfig$TypeAdapter.TYPE_TOKEN);
                 String json = GsonHelper.toJson(adapter, newFileConfig);
                 try {
-                    deleteActiveConfig();
                     mFileHelper.createFile(CURRENT_CONFIG, json);
                     if (previousConfig != null) {
                         String previousJson = GsonHelper.toJson(adapter, previousConfig);
@@ -83,6 +81,10 @@ public class FileConfigHelper {
         return mActiveConfig;
     }
 
+    public void setActiveConfig(@Nullable FileConfig mActiveConfig) {
+        this.mActiveConfig = mActiveConfig;
+    }
+
     public void updateFileConfigVersion(String version) {
         SharedPreferences.Editor editor = mSharedPreferences.edit();
         editor.putString(UPDATE_GRAPH_VERSION, version);
@@ -109,9 +111,6 @@ public class FileConfigHelper {
         mSharedPreferences.edit().putInt(DATABASE_VERSION, databaseVersion).apply();
     }
 
-    private void deleteActiveConfig() {
-        mFileHelper.deleteFile(ACTIVE_CONFIG);
-    }
 
     public void setShouldOptimize(boolean shouldOptimize) {
         mSharedPreferences.edit().putBoolean(OPTIMIZE, shouldOptimize).apply();

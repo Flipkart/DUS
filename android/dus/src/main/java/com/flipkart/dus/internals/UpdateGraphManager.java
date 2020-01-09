@@ -81,7 +81,8 @@ public class UpdateGraphManager {
 
     public int resetUpdateGraph(@NonNull Context context, boolean shouldRetry) {
         Log.i("resetUpdateGraph", "resetUpdateGraph called");
-        mFileConfigHelper.updateFileConfig(null);
+        mFileConfigHelper.clear();
+        mFileConfigHelper.setActiveConfig(null);
         mFileConfig = null;
         updateGraphStatus.set(DUSConstants.NONE);
         return refreshUpdateGraph(context, shouldRetry);

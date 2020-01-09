@@ -45,13 +45,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private final Context mContext;
     private String databasePath;
     private SharedPreferences mSharedPreferences;
-    @NonNull
-    private FileHelper fileHelper;
 
 
-    public DatabaseHelper(@NonNull Context context, @NonNull FileHelper fileHelper, @NonNull String importDatabaseName, int importDatabaseVersion) {
+    public DatabaseHelper(@NonNull Context context, @NonNull String importDatabaseName, int importDatabaseVersion) {
         super(context, DATABASE_NAME, null, importDatabaseVersion);
-        this.fileHelper = fileHelper;
         if (context.getApplicationInfo() != null) {
             this.databasePath = context.getApplicationInfo().dataDir + "/databases/" + DATABASE_NAME;
         }
@@ -91,7 +88,6 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(@NonNull SQLiteDatabase db, int oldVersion, int newVersion) {
         db.execSQL("DROP TABLE IF EXISTS " + TABLE_COMPONENTS);
         onCreate(db);
-        fileHelper.deleteAllFiles();
         //TODO: Set is database upgraded to false so that new database could be copied
     }
 
