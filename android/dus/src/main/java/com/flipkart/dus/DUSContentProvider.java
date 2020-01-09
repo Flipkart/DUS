@@ -83,7 +83,7 @@ public class DUSContentProvider extends ContentProvider {
         if (mDatabaseHelper == null) {
             synchronized (this) {
                 if (mDatabaseHelper == null) {
-                    mDatabaseHelper = new DatabaseHelper(getContext(), getFileHelper(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbName(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbVersion());
+                    mDatabaseHelper = new DatabaseHelper(getContext(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbName(), DusDependencyResolver.getDUSDependencyResolver(getContext()).getPackagedDbVersion());
                 }
             }
         }
@@ -284,6 +284,7 @@ public class DUSContentProvider extends ContentProvider {
                 break;
             case DUSContracts.CLEAR:
                 purgeCacheAndDb();
+                getFileHelper().deleteAllFiles();
                 break;
             case DUSContracts.CLEAR_UG:
                 purgeCacheAndDb();
@@ -297,7 +298,6 @@ public class DUSContentProvider extends ContentProvider {
     private void purgeCacheAndDb() {
         mCachedScreenInfo.clear();
         getDatabaseHelper().getWritableDatabase().delete(TABLE_COMPONENTS, null, null);
-        getFileHelper().deleteAllFiles();
     }
 
     @Override
