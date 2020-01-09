@@ -287,10 +287,10 @@ public class DUSContentProvider extends ContentProvider {
                 getFileHelper().deleteAllFiles();
                 break;
             case DUSContracts.CLEAR_UG:
-                purgeCacheAndDb();
                 if (getContext() != null) {
                     getScreenMaker().resetUpdateGraph(getContext(), true);
                 }
+                purgeCacheAndDb();
         }
         return 0;
     }
